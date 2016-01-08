@@ -21,3 +21,13 @@ class RickyGSays
     end
   end
 end
+
+class RickyText
+  def initialize
+    @quotes = IO.readlines('./fixtures/rickygervais.txt')
+  end
+
+  def random_quote
+    @quote[rand(@quotes.length)]
+  end
+end
