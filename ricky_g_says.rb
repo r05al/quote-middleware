@@ -17,6 +17,10 @@ class RickyGSays
       else
         @app.call(env)
       end
+    elsif env['PATH_INFO'] == '/qod'
+      status, headers, response = @app.call(env)
+      response.push("\n" + TheySaidSo.new.quote)
+      [status, headers, response]
     else
       @app.call(env)
     end
@@ -32,5 +36,30 @@ class RickyText
 
   def random_quote
     @quotes[rand(@quotes.length)]
+  end
+end
+
+class TheySaidSo
+  require 'httparty'
+  include HTTParty
+  base_uri 'api.theysaidso.com'
+  attr_reader :qod_response
+
+  def initialize
+    @qod_response = qod
+  end
+
+  def qod
+    self.class.get("/qod")
+  end
+
+  def random
+    self.class.get("/quote?api_key=<key>")
+  end
+
+  def quote
+    qod_response["contents"]["quotes"][0]["quote"] +
+    " -" +
+    qod_response["contents"]["quotes"][0]["author"]
   end
 end
