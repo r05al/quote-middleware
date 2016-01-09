@@ -1,6 +1,7 @@
 class RickyGSays
   def initialize(app)
     @app = app
+    @quotes = RickyText.new
   end
 
   def call(env)
@@ -9,7 +10,7 @@ class RickyGSays
       case request.request_method
       when 'GET'
         status, headers, response = @app.call(env)
-        response.push(" -Ricky Gervais")
+        response.push("\n" + @quotes.random_quote + " -Ricky Gervais")
         [status, headers, response]
       when 'POST'
         [404, {}, [""]]
@@ -23,11 +24,13 @@ class RickyGSays
 end
 
 class RickyText
+  attr_reader :quotes
+
   def initialize
     @quotes = IO.readlines('./fixtures/rickygervais.txt')
   end
 
   def random_quote
-    @quote[rand(@quotes.length)]
+    @quotes[rand(@quotes.length)]
   end
 end
